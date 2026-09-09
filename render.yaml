@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: ucshop
+    env: node
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ucshop-db
+          property: connectionString
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://ucshop.onrender.com
+      - key: NEXT_PUBLIC_MINI_APP_URL
+        value: https://t.me/your_bot/your_app
+      - key: BOT_TOKEN
+        sync: false
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: NEXTAUTH_URL
+        value: https://ucshop.onrender.com
+      - key: ADMIN_EMAIL
+        value: admin@ucshop1.ru
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PAYMENT_PROVIDER
+        value: mock
+      - key: PAYMENT_WEBHOOK_SECRET
+        generateValue: true
+      - key: DELIVERY_PROVIDER
+        value: mock
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: ucshop-db
+    databaseName: ucshop
+    user: ucshop
