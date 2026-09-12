@@ -14,7 +14,25 @@ import {
   Users,
   Gift,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+interface ReferralItem {
+  id: string;
+  status: string;
+  createdAt: string;
+  referredUser: {
+    firstName?: string;
+    lastName?: string;
+    telegramUsername?: string;
+  };
+}
+
+interface ReferralStats {
+  totalReferrals: number;
+  activeReferrals: number;
+  totalEarned: number;
+  availableBalance: number;
+}
 
 const menuItems = [
   { href: '/mini-app/orders', label: 'История заказов', icon: Receipt },
@@ -25,15 +43,29 @@ const menuItems = [
 export default function ProfilePage() {
   const { user, isLoading, debug } = useUserStore();
   const [copied, setCopied] = useState(false);
+  const [stats, setStats] = useState<ReferralStats | null>(null);
+  const [referrals, setReferrals] = useState<ReferralItem[]>([]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    fetch(`/api/referral/${user.id}/stats`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setStats(d))
+      .catch(() => {});
+    fetch(`/api/referral/${user.id}/referrals`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => Array.isArray(d) && setReferrals(d))
+      .catch(() => {});
+  }, [user?.id]);
 
   const displayUser = {
     telegramUsername: user?.telegramUsername ? `@${user.telegramUsername}` : '—',
     firstName: user?.firstName || 'Гость',
     lastName: user?.lastName || '',
-    balance: 0,
+    balance: stats?.availableBalance ?? 0,
     referralCode: user?.referralCode || '—',
-    referralEarnings: 0,
-    referralCount: 0,
+    referralEarnings: stats?.totalEarned ?? 0,
+    referralCount: stats?.totalReferrals ?? 0,
   };
 
   const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || 'UC_Steam_Bot';
@@ -141,6 +173,43 @@ export default function ProfilePage() {
           <Gift className="h-3 w-3 text-[#ff4d5e]" />
           0.5% от каждого заказа приглашённых пользователей
         </p>
+
+        {/* Referrals list */}
+        {referrals.length > 0 && (
+          <div className="space-y-2 border-t border-white/[0.06] pt-3">
+            <p className="text-xs font-medium text-muted-foreground">Ваши рефералы:</p>
+            {referrals.map((r) => {
+              const u = r.referredUser;
+              const name =
+                [u?.firstName, u?.lastName].filter(Boolean).join(' ') ||
+                (u?.telegramUsername ? `@${u.telegramUsername}` : 'Пользователь');
+              return (
+                <div
+                  key={r.id}
+                  className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{name}</p>
+                    {u?.telegramUsername && (
+                      <p className="truncate text-[11px] text-muted-foreground">
+                        @{u.telegramUsername}
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                      r.status === 'ACTIVE'
+                        ? 'bg-emerald-500/15 text-emerald-400'
+                        : 'bg-white/[0.06] text-muted-foreground'
+                    }`}
+                  >
+                    {r.status === 'ACTIVE' ? 'Активен' : r.status}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Menu */}
