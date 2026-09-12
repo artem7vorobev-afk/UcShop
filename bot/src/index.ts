@@ -64,14 +64,16 @@ bot.command('start', async (ctx) => {
             },
           });
           // Уведомляем реферера о новом реферале
-          const refName = [firstName, lastName].filter(Boolean).join(' ') || 'Пользователь';
-          await ctx.api
-            .sendMessage(
-              referrer.telegramId,
-              `🎉 У вас новый реферал: ${refName}${telegramUsername ? ` (@${telegramUsername})` : ''}!\n\n` +
-                `Вы будете получать 0.5% с каждого его заказа.`
-            )
-            .catch(() => {});
+          if (referrer.telegramId) {
+            const refName = [firstName, lastName].filter(Boolean).join(' ') || 'Пользователь';
+            await ctx.api
+              .sendMessage(
+                referrer.telegramId,
+                `🎉 У вас новый реферал: ${refName}${telegramUsername ? ` (@${telegramUsername})` : ''}!\n\n` +
+                  `Вы будете получать 0.5% с каждого его заказа.`
+              )
+              .catch(() => {});
+          }
         } catch {
           /* referral already exists */
         }
