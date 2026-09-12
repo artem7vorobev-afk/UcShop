@@ -1,32 +1,23 @@
 import Link from 'next/link';
-import { Star, Gamepad2, Smartphone, Monitor, Gift, Gem, ChevronRight, Zap } from 'lucide-react';
+import { ChevronRight, Zap } from 'lucide-react';
+import { ServiceIcon } from '@/components/mini-app/ServiceIcon';
 
-const categories = [
-  { slug: 'telegram-stars', name: 'Telegram Stars', icon: Star },
-  { slug: 'pubg-mobile', name: 'PUBG Mobile', icon: Gamepad2 },
-  { slug: 'steam', name: 'Steam', icon: Gamepad2 },
-  { slug: 'roblox', name: 'Roblox', icon: Gamepad2 },
-  { slug: 'mobile-games', name: 'Мобильные игры', icon: Smartphone },
-  { slug: 'pc-games', name: 'PC игры', icon: Monitor },
-  { slug: 'gift-cards', name: 'Подарочные карты', icon: Gift },
-  { slug: 'subscriptions', name: 'Подписки', icon: Gem },
-];
-
-const featured = [
-  {
-    slug: 'genshin-impact-crystals',
-    name: 'Genshin Impact',
-    subtitle: 'Кристаллы Genesis',
-    price: 99,
-    tag: 'Хит',
-  },
-  {
-    slug: 'discord-nitro',
-    name: 'Discord Nitro',
-    subtitle: 'Подписка Discord',
-    price: 349,
-    tag: 'Популярное',
-  },
+const popular: { name: string; href: string; icon: string; color?: string }[] = [
+  { name: 'PUBG Mobile', href: '/mini-app/product/pubg-mobile-uc', icon: 'pubg' },
+  { name: 'Steam', href: '/mini-app/product/steam-wallet', icon: 'steam', color: 'ffffff' },
+  { name: 'Free Fire', href: '/mini-app/product/free-fire-diamonds', icon: 'garena' },
+  { name: 'Discord', href: '/mini-app/product/discord-nitro', icon: 'discord' },
+  { name: 'App Store & iTunes', href: '/mini-app/product/apple-itunes', icon: 'appstore' },
+  { name: 'Xbox Game Pass', href: '/mini-app/category/gift-cards', icon: 'xbox' },
+  { name: 'Xbox GiftCards', href: '/mini-app/product/xbox-wallet', icon: 'xbox' },
+  { name: 'Roblox', href: '/mini-app/product/roblox-robux', icon: 'roblox', color: 'ffffff' },
+  { name: 'PlayStation', href: '/mini-app/product/playstation-wallet', icon: 'playstation' },
+  { name: 'Mobile Legends', href: '/mini-app/product/mobile-legends-diamonds', icon: 'mobilelegendsbangbang' },
+  { name: 'Genshin Impact', href: '/mini-app/product/genshin-impact-crystals', icon: 'genshinimpact' },
+  { name: 'Honkai: Star Rail', href: '/mini-app/product/honkai-star-rail-shards', icon: 'honkaistarrail' },
+  { name: 'Delta Force', href: '/mini-app/category/pc-games', icon: 'deltaforce' },
+  { name: 'PUBG: BATTLEGROUNDS', href: '/mini-app/category/pc-games', icon: 'pubg' },
+  { name: 'PUBG: New State', href: '/mini-app/category/mobile-games', icon: 'pubg' },
 ];
 
 export default function MiniAppHomePage() {
@@ -56,53 +47,22 @@ export default function MiniAppHomePage() {
         </div>
       </Link>
 
-      {/* Categories */}
-      <section>
-        <h3 className="mb-3 text-base font-bold tracking-tight">Категории</h3>
-        <div className="grid grid-cols-4 gap-2.5">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <Link
-                key={cat.slug}
-                href={`/mini-app/category/${cat.slug}`}
-                className="group flex flex-col items-center gap-2 active:scale-95 transition-transform"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.04] transition-colors group-hover:border-[#e50914]/30 group-hover:bg-[#e50914]/10">
-                  <Icon className="h-6 w-6 text-foreground/80 transition-colors group-hover:text-[#ff4d5e]" strokeWidth={1.8} />
-                </div>
-                <span className="w-full truncate text-center text-[10px] font-medium leading-tight text-muted-foreground">
-                  {cat.name}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Featured */}
+      {/* Popular products */}
       <section>
         <h3 className="mb-3 text-base font-bold tracking-tight">Популярные товары</h3>
-        <div className="space-y-2.5">
-          {featured.map((p) => (
+        <div className="grid grid-cols-5 gap-2.5">
+          {popular.map((item) => (
             <Link
-              key={p.slug}
-              href={`/mini-app/product/${p.slug}`}
-              className="block active:scale-[0.98] transition-transform"
+              key={item.name}
+              href={item.href}
+              className="group flex flex-col items-center gap-2 active:scale-95 transition-transform"
             >
-              <div className="flex items-center gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 transition-colors hover:border-white/[0.12]">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#e50914]/20 to-transparent border border-[#e50914]/20">
-                  <Gamepad2 className="h-5 w-5 text-[#ff4d5e]" strokeWidth={1.8} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{p.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{p.subtitle}</p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p className="text-sm font-bold">от {p.price} ₽</p>
-                  <p className="text-[10px] font-medium text-[#ff4d5e]">{p.tag}</p>
-                </div>
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06] bg-white/[0.04] transition-colors group-hover:border-[#e50914]/30 group-hover:bg-[#e50914]/10">
+                <ServiceIcon slug={item.icon} name={item.name} color={item.color} />
               </div>
+              <span className="w-full truncate text-center text-[10px] font-medium leading-tight text-muted-foreground">
+                {item.name}
+              </span>
             </Link>
           ))}
         </div>
