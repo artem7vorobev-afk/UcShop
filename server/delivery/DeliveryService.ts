@@ -60,7 +60,7 @@ export class DeliveryService {
       variantId: orderItem.variantId,
       variantName: orderItem.variant.name,
       quantity: orderItem.quantity,
-      itemData: orderItem.itemData,
+      itemData: (orderItem.itemData || {}) as Record<string, any>,
     };
 
     const result = await provider.deliverProduct(orderItemData, deliveryData);
