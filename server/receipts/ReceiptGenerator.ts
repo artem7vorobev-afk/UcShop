@@ -277,8 +277,8 @@ export class ReceiptGenerator {
       paymentStatus: order.payment?.status || 'Не указано',
       customerInfo: {
         name: `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim(),
-        email: order.orderData.email,
-        phone: order.orderData.phone,
+        email: (order.orderData as Record<string, any> | null)?.email,
+        phone: (order.orderData as Record<string, any> | null)?.phone,
       },
     };
 
