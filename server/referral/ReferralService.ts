@@ -32,6 +32,12 @@ export class ReferralService {
       return false;
     }
 
+    // Не перезаписываем существующего реферера
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || user.referredBy) {
+      return false;
+    }
+
     // Обновление пользователя с реферальным кодом
     await prisma.user.update({
       where: { id: userId },
@@ -40,14 +46,18 @@ export class ReferralService {
       },
     });
 
-    // Создание записи о реферале
-    await prisma.referral.create({
-      data: {
-        referrerId: referrer.id,
-        referredUserId: userId,
-        status: 'ACTIVE',
-      },
-    });
+    // Создание записи о реферале (referredUserId уникален — игнорируем дубли)
+    try {
+      await prisma.referral.create({
+        data: {
+          referrerId: referrer.id,
+          referredUserId: userId,
+          status: 'ACTIVE',
+        },
+      });
+    } catch {
+      /* referral record already exists */
+    }
 
     return true;
   }
@@ -213,8 +223,8 @@ export class ReferralService {
    * Генерация реферальной ссылки
    */
   generateReferralLink(referralCode: string): string {
-    const baseUrl = process.env.NEXT_PUBLIC_MINI_APP_URL || 'https://t.me/your_bot/your_app';
-    return `${baseUrl}?ref=${referralCode}`;
+    const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || 'UC_Steam_Bot';
+    return `https://t.me/${botUsername}?start=ref_${referralCode}`;
   }
 
   /**

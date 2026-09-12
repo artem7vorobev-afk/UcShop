@@ -27,7 +27,7 @@ function verifyAuthToken(token: string): string | null {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { telegramData, token } = body;
+    const { telegramData, token, referralCode } = body;
 
     // Token-based auth (fallback when initData is unavailable)
     if (token) {
@@ -57,6 +57,15 @@ export async function POST(request: Request) {
     }
 
     const user = await createOrUpdateTelegramUser(telegramData);
+
+    // Привязка реферала по ссылке (?startapp=ref_CODE / ?ref=CODE)
+    if (referralCode && typeof referralCode === 'string') {
+      try {
+        await referralService.applyReferralCode(user.id, referralCode);
+      } catch (e) {
+        console.error('Referral apply error:', e);
+      }
+    }
 
     return NextResponse.json({
       success: true,

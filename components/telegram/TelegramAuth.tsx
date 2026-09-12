@@ -57,7 +57,14 @@ export function TelegramAuth() {
       }
 
       const tgUser = tg.initDataUnsafe?.user;
-      const authToken = new URLSearchParams(window.location.search).get('auth');
+      const params = new URLSearchParams(window.location.search);
+      const authToken = params.get('auth');
+
+      // Referral: startapp=ref_CODE (t.me/bot/app?startapp=) или ?ref=CODE в URL
+      const startParam = (tg.initDataUnsafe as any)?.start_param || '';
+      const referralCode = startParam.startsWith('ref_')
+        ? startParam.slice(4)
+        : params.get('ref') || undefined;
 
       if (!tgUser?.id) {
         // initData unavailable (stub mode) — fall back to signed token in URL
@@ -84,6 +91,7 @@ export function TelegramAuth() {
               first_name: tgUser.first_name,
               last_name: tgUser.last_name,
             },
+            referralCode,
           }),
         });
 

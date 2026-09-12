@@ -24,10 +24,11 @@ bot.command('start', async (ctx) => {
   const telegramUsername = ctx.from?.username;
   const firstName = ctx.from?.first_name;
   const lastName = ctx.from?.last_name;
+  const startPayload = ctx.match?.toString().trim() || '';
 
   if (telegramId) {
     // Create or update user
-    await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { telegramId },
       update: {
         telegramUsername,
@@ -42,6 +43,31 @@ bot.command('start', async (ctx) => {
         referralCode: generateReferralCode(),
       },
     });
+
+    // Referral link: /start ref_CODE — привязываем реферера
+    if (startPayload.startsWith('ref_') && !user.referredBy) {
+      const refCode = startPayload.slice(4);
+      const referrer = await prisma.user.findFirst({
+        where: { referralCode: refCode },
+      });
+      if (referrer && referrer.id !== user.id) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { referredBy: referrer.id },
+        });
+        try {
+          await prisma.referral.create({
+            data: {
+              referrerId: referrer.id,
+              referredUserId: user.id,
+              status: 'ACTIVE',
+            },
+          });
+        } catch {
+          /* referral already exists */
+        }
+      }
+    }
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_MINI_APP_URL || 'https://t.me/your_bot/your_app';

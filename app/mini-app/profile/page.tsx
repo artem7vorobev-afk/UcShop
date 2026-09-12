@@ -9,6 +9,7 @@ import {
   MessageCircle,
   ChevronRight,
   Copy,
+  Share2,
   Wallet,
   Users,
   Gift,
@@ -35,15 +36,29 @@ export default function ProfilePage() {
     referralCount: 0,
   };
 
+  const botUsername = process.env.NEXT_PUBLIC_BOT_USERNAME || 'UC_Steam_Bot';
+  const referralLink = `https://t.me/${botUsername}?start=ref_${displayUser.referralCode}`;
+
   const initials = (displayUser.firstName[0] || 'Г').toUpperCase();
 
-  const copyCode = async () => {
+  const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(displayUser.referralCode);
+      await navigator.clipboard.writeText(referralLink);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
       /* clipboard unavailable */
+    }
+  };
+
+  const shareLink = () => {
+    const text = 'Заходи в UcShop — магазин цифровых товаров и игровых пополнений!';
+    const url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(text)}`;
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg?.openTelegramLink) {
+      tg.openTelegramLink(url);
+    } else {
+      window.open(url, '_blank');
     }
   };
 

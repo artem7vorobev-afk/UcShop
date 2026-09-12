@@ -2,6 +2,7 @@ import { PaymentProvider } from './providers';
 import { MockPaymentProvider } from './providers/MockPaymentProvider';
 import { SBPPaymentProvider, SBPConfig } from './providers/SBPPaymentProvider';
 import { prisma } from '@/lib/prisma';
+import { referralService } from '@/server/referral/ReferralService';
 
 /**
  * Сервис управления платежами
@@ -152,6 +153,13 @@ export class PaymentService {
             where: { id: payment.orderId },
             data: { status: 'PAID' },
           });
+
+          // Начисление 0.5% рефереру
+          try {
+            await referralService.creditReferralBonus(payment.orderId);
+          } catch (e) {
+            console.error('Referral bonus error:', e);
+          }
         }
       }
     }

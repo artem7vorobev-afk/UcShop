@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { referralService } from '@/server/referral/ReferralService';
 
 // GET - Получить заказ по ID
 export async function GET(
@@ -71,6 +72,15 @@ export async function PUT(
         payment: true,
       },
     });
+
+    // Начисление 0.5% рефереру при ручном переводе в PAID
+    if (status === 'PAID') {
+      try {
+        await referralService.creditReferralBonus(order.id);
+      } catch (e) {
+        console.error('Referral bonus error:', e);
+      }
+    }
 
     return NextResponse.json(order);
   } catch (error) {
