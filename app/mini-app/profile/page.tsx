@@ -123,14 +123,17 @@ export default function ProfilePage() {
           </div>
         </div>
         <div>
-          <p className="mb-1.5 text-xs font-medium text-muted-foreground">Ваш реферальный код:</p>
+          <p className="mb-1.5 text-xs font-medium text-muted-foreground">Ваша реферальная ссылка:</p>
           <div className="flex gap-2">
-            <div className="flex h-11 flex-1 items-center truncate rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 font-mono text-sm">
-              {displayUser.referralCode}
+            <div className="flex h-11 min-w-0 flex-1 items-center truncate rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 font-mono text-xs">
+              {referralLink}
             </div>
-            <Button variant="outline" size="sm" className="h-11 shrink-0" onClick={copyCode}>
+            <Button variant="outline" size="sm" className="h-11 shrink-0" onClick={copyLink}>
               <Copy className="h-3.5 w-3.5" />
-              {copied ? 'Ок' : 'Копировать'}
+              {copied ? 'Ок' : ''}
+            </Button>
+            <Button variant="neon" size="sm" className="h-11 shrink-0" onClick={shareLink}>
+              <Share2 className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>

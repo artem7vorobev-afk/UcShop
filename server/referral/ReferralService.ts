@@ -134,7 +134,7 @@ export class ReferralService {
       throw new Error('User not found');
     }
 
-    const activeReferrals = user.referrals.filter(r => r.status === 'ACTIVE').length;
+    const activeReferrals = user.referrals.filter((r: { status: string }) => r.status === 'ACTIVE').length;
     const totalEarned = Number(user.referralEarnings || 0);
     const availableBalance = Number(user.balance || 0);
 
