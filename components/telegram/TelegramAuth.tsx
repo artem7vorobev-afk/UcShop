@@ -122,6 +122,7 @@ export function TelegramAuth() {
       const interval = setInterval(() => {
         if (window.Telegram?.WebApp) {
           clearInterval(interval);
+          clearTimeout(timeout);
           authenticate();
         }
       }, 100);
