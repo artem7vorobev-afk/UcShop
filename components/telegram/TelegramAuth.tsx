@@ -27,24 +27,29 @@ declare global {
 export function TelegramAuth() {
   const setUser = useUserStore((s) => s.setUser);
   const setLoading = useUserStore((s) => s.setLoading);
+  const setDebug = useUserStore((s) => s.setDebug);
 
   useEffect(() => {
     const authenticate = async () => {
       const tg = window.Telegram?.WebApp;
       if (!tg) {
-        // Not inside Telegram webview
+        setDebug('no Telegram.WebApp');
         setLoading(false);
         return;
       }
 
+      setDebug(`sdk ok, initData=${tg.initData ? 'yes' : 'empty'}`);
       tg.ready();
       tg.expand();
 
       const tgUser = tg.initDataUnsafe?.user;
       if (!tgUser?.id) {
+        setDebug('no initDataUnsafe.user');
         setLoading(false);
         return;
       }
+
+      setDebug(`tgUser id=${tgUser.id}`);
 
       try {
         const res = await fetch('/api/auth/telegram', {
@@ -62,11 +67,14 @@ export function TelegramAuth() {
 
         if (res.ok) {
           const data = await res.json();
+          setDebug(`auth ok: ${data.user?.firstName || '?'}`);
           setUser(data.user);
         } else {
+          setDebug(`auth fail ${res.status}`);
           setLoading(false);
         }
-      } catch {
+      } catch (e) {
+        setDebug(`auth error ${String(e)}`);
         setLoading(false);
       }
     };
@@ -83,6 +91,7 @@ export function TelegramAuth() {
       }, 100);
       const timeout = setTimeout(() => {
         clearInterval(interval);
+        setDebug('sdk timeout 5s');
         setLoading(false);
       }, 5000);
       return () => {
@@ -90,7 +99,7 @@ export function TelegramAuth() {
         clearTimeout(timeout);
       };
     }
-  }, [setUser, setLoading]);
+  }, [setUser, setLoading, setDebug]);
 
   return (
     <Script

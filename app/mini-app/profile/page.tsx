@@ -21,6 +21,9 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Профиль</h2>
+      {debug && (
+        <p className="text-xs text-muted-foreground break-all">DEBUG: {debug}</p>
+      )}
 
       {/* User Info */}
       <Card className="glass neon-glow">
