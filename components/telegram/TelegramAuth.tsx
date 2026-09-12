@@ -98,7 +98,7 @@ export function TelegramAuth() {
         if (res.ok) {
           const data = await res.json();
           setDebug(`auth ok: ${data.user?.firstName || '?'}`);
-          setUser(data.user);
+          setUser({ ...data.user, photoUrl: (tgUser as any).photo_url });
         } else {
           setDebug(`auth fail ${res.status}`);
           setLoading(false);

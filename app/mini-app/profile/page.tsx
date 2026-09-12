@@ -16,17 +16,6 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-interface ReferralItem {
-  id: string;
-  status: string;
-  createdAt: string;
-  referredUser: {
-    firstName?: string;
-    lastName?: string;
-    telegramUsername?: string;
-  };
-}
-
 interface ReferralStats {
   totalReferrals: number;
   activeReferrals: number;
@@ -35,26 +24,22 @@ interface ReferralStats {
 }
 
 const menuItems = [
+  { href: '/mini-app/referrals', label: 'Мои рефералы', icon: Users },
   { href: '/mini-app/orders', label: 'История заказов', icon: Receipt },
   { href: '/mini-app/faq', label: 'FAQ', icon: HelpCircle },
   { href: '/mini-app/support', label: 'Поддержка', icon: MessageCircle },
 ];
 
 export default function ProfilePage() {
-  const { user, isLoading, debug } = useUserStore();
+  const { user, isLoading } = useUserStore();
   const [copied, setCopied] = useState(false);
   const [stats, setStats] = useState<ReferralStats | null>(null);
-  const [referrals, setReferrals] = useState<ReferralItem[]>([]);
 
   useEffect(() => {
     if (!user?.id) return;
     fetch(`/api/referral/${user.id}/stats`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => d && setStats(d))
-      .catch(() => {});
-    fetch(`/api/referral/${user.id}/referrals`)
-      .then((r) => (r.ok ? r.json() : []))
-      .then((d) => Array.isArray(d) && setReferrals(d))
       .catch(() => {});
   }, [user?.id]);
 
@@ -97,9 +82,6 @@ export default function ProfilePage() {
   return (
     <div className="space-y-5 animate-fade-up">
       <h2 className="text-xl font-extrabold tracking-tight">Профиль</h2>
-      {debug && (
-        <p className="break-all text-[10px] text-muted-foreground/60">DEBUG: {debug}</p>
-      )}
 
       {/* User card */}
       <div className="flex items-center gap-4 rounded-2xl border border-[#e50914]/25 bg-gradient-to-br from-[#1a0507] to-background p-5 glow-red-sm">
@@ -113,9 +95,17 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff2d42] to-[#e50914] text-xl font-extrabold text-white shadow-[0_4px_20px_rgba(229,9,20,0.4)]">
-              {initials}
-            </div>
+            {user?.photoUrl ? (
+              <img
+                src={user.photoUrl}
+                alt=""
+                className="h-14 w-14 shrink-0 rounded-full object-cover shadow-[0_4px_20px_rgba(229,9,20,0.4)]"
+              />
+            ) : (
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff2d42] to-[#e50914] text-xl font-extrabold text-white shadow-[0_4px_20px_rgba(229,9,20,0.4)]">
+                {initials}
+              </div>
+            )}
             <div className="min-w-0">
               <p className="truncate text-base font-bold">
                 {displayUser.firstName} {displayUser.lastName}
@@ -173,43 +163,13 @@ export default function ProfilePage() {
           <Gift className="h-3 w-3 text-[#ff4d5e]" />
           0.5% от каждого заказа приглашённых пользователей
         </p>
-
-        {/* Referrals list */}
-        {referrals.length > 0 && (
-          <div className="space-y-2 border-t border-white/[0.06] pt-3">
-            <p className="text-xs font-medium text-muted-foreground">Ваши рефералы:</p>
-            {referrals.map((r) => {
-              const u = r.referredUser;
-              const name =
-                [u?.firstName, u?.lastName].filter(Boolean).join(' ') ||
-                (u?.telegramUsername ? `@${u.telegramUsername}` : 'Пользователь');
-              return (
-                <div
-                  key={r.id}
-                  className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{name}</p>
-                    {u?.telegramUsername && (
-                      <p className="truncate text-[11px] text-muted-foreground">
-                        @{u.telegramUsername}
-                      </p>
-                    )}
-                  </div>
-                  <span
-                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                      r.status === 'ACTIVE'
-                        ? 'bg-emerald-500/15 text-emerald-400'
-                        : 'bg-white/[0.06] text-muted-foreground'
-                    }`}
-                  >
-                    {r.status === 'ACTIVE' ? 'Активен' : r.status}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <Link
+          href="/mini-app/referrals"
+          className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-sm font-semibold transition-colors hover:border-[#e50914]/25"
+        >
+          Мои рефералы
+          <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+        </Link>
       </div>
 
       {/* Menu */}

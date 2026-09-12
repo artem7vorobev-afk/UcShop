@@ -7,6 +7,7 @@ export interface TelegramUser {
   firstName?: string;
   lastName?: string;
   referralCode?: string;
+  photoUrl?: string;
 }
 
 interface UserState {

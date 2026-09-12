@@ -151,7 +151,7 @@ export class ReferralService {
    * Получение списка рефералов пользователя
    */
   async getReferrals(userId: string): Promise<any[]> {
-    return prisma.referral.findMany({
+    const referrals = await prisma.referral.findMany({
       where: { referrerId: userId },
       include: {
         referredUser: {
@@ -166,6 +166,24 @@ export class ReferralService {
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    // Заработок по каждому рефералу (через заказы приглашённого)
+    const txs = await prisma.referralTransaction.findMany({
+      where: { referrerId: userId, type: 'EARNING' },
+      include: { order: { select: { userId: true } } },
+    });
+    const earnedByUser = new Map<string, number>();
+    for (const tx of txs) {
+      const uid = tx.order?.userId;
+      if (uid) {
+        earnedByUser.set(uid, (earnedByUser.get(uid) || 0) + Number(tx.amount));
+      }
+    }
+
+    return referrals.map((r: { referredUserId: string }) => ({
+      ...r,
+      earned: earnedByUser.get(r.referredUserId) || 0,
+    }));
   }
 
   /**
