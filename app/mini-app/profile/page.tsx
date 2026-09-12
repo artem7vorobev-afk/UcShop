@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useUserStore } from '@/store/user';
 
 export default function ProfilePage() {
-  const { user, isLoading } = useUserStore();
+  const { user, isLoading, debug } = useUserStore();
 
   const displayUser = {
     telegramUsername: user?.telegramUsername ? `@${user.telegramUsername}` : '—',
