@@ -1,6 +1,17 @@
 import { Bot, GrammyError } from 'grammy';
 import { autoRetry } from '@grammyjs/auto-retry';
 import { prisma } from '../lib/prisma';
+import crypto from 'crypto';
+
+// Generate signed auth token so mini-app can identify user even without initData
+function generateAuthToken(telegramId: string): string {
+  const ts = Date.now().toString();
+  const sig = crypto
+    .createHmac('sha256', process.env.BOT_TOKEN || '')
+    .update(`${telegramId}:${ts}`)
+    .digest('hex');
+  return Buffer.from(`${telegramId}:${ts}:${sig}`).toString('base64url');
+}
 
 const bot = new Bot(process.env.BOT_TOKEN || '');
 
@@ -33,7 +44,10 @@ bot.command('start', async (ctx) => {
     });
   }
 
-  const miniAppUrl = process.env.NEXT_PUBLIC_MINI_APP_URL || 'https://t.me/your_bot/your_app';
+  const baseUrl = process.env.NEXT_PUBLIC_MINI_APP_URL || 'https://t.me/your_bot/your_app';
+  const miniAppUrl = telegramId
+    ? `${baseUrl}/mini-app?auth=${generateAuthToken(telegramId)}`
+    : `${baseUrl}/mini-app`;
 
   await ctx.reply(
     `👋 Привет, ${firstName || 'пользователь'}!\n\n` +

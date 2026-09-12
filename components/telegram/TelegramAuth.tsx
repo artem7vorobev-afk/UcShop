@@ -50,9 +50,17 @@ export function TelegramAuth() {
       tg.expand();
 
       const tgUser = tg.initDataUnsafe?.user;
+      const authToken = new URLSearchParams(window.location.search).get('auth');
+
       if (!tgUser?.id) {
-        setDebug('no initDataUnsafe.user');
-        setLoading(false);
+        // initData unavailable (stub mode) — fall back to signed token in URL
+        if (authToken) {
+          setDebug('no initData, trying token');
+          await authenticateWithToken(authToken);
+        } else {
+          setDebug('no initDataUnsafe.user, no token');
+          setLoading(false);
+        }
         return;
       }
 
@@ -86,6 +94,27 @@ export function TelegramAuth() {
       }
     };
 
+    const authenticateWithToken = async (token: string) => {
+      try {
+        const res = await fetch('/api/auth/telegram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setDebug(`token auth ok: ${data.user?.firstName || '?'}`);
+          setUser(data.user);
+        } else {
+          setDebug(`token auth fail ${res.status}`);
+          setLoading(false);
+        }
+      } catch (e) {
+        setDebug(`token auth error ${String(e)}`);
+        setLoading(false);
+      }
+    };
+
     // SDK script may still be loading — retry briefly
     if (window.Telegram?.WebApp) {
       authenticate();
@@ -98,8 +127,14 @@ export function TelegramAuth() {
       }, 100);
       const timeout = setTimeout(() => {
         clearInterval(interval);
-        setDebug('sdk timeout 5s');
-        setLoading(false);
+        const authToken = new URLSearchParams(window.location.search).get('auth');
+        if (authToken) {
+          setDebug('sdk timeout, trying token');
+          authenticateWithToken(authToken);
+        } else {
+          setDebug('sdk timeout 5s');
+          setLoading(false);
+        }
       }, 5000);
       return () => {
         clearInterval(interval);
