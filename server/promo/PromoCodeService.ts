@@ -66,7 +66,7 @@ export class PromoCodeService {
       return { valid: false, error: 'Лимит использований исчерпан' };
     }
 
-    if (promoCode.minOrderAmount && orderAmount < promoCode.minOrderAmount) {
+    if (promoCode.minOrderAmount && orderAmount < Number(promoCode.minOrderAmount)) {
       return { valid: false, error: `Минимальная сумма заказа: ${promoCode.minOrderAmount} ₽` };
     }
 
@@ -83,9 +83,9 @@ export class PromoCodeService {
     // Расчёт скидки
     let discountAmount = 0;
     if (promoCode.discountType === 'PERCENTAGE') {
-      discountAmount = (orderAmount * promoCode.discountValue) / 100;
+      discountAmount = (orderAmount * Number(promoCode.discountValue)) / 100;
     } else {
-      discountAmount = promoCode.discountValue;
+      discountAmount = Number(promoCode.discountValue);
     }
 
     return {
