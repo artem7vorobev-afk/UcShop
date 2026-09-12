@@ -7,28 +7,49 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ucshop1
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+        NEXT_PUBLIC_MINI_APP_URL: ${NEXT_PUBLIC_MINI_APP_URL:-}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000/api}
     container_name: ucshop1-app
     restart: always
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/ucshop1?schema=public
+      - NODE_ENV=production
     ports:
       - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    container_name: ucshop1-bot
+    restart: always
+    env_file: .env
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/ucshop1?schema=public
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/ucshop1?schema=public
       - NODE_ENV=production
     depends_on:
-      - postgres
-    volumes:
-      - ./public:/app/public
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
