@@ -1,12 +1,29 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useUserStore } from '@/store/user';
+import {
+  Receipt,
+  HelpCircle,
+  MessageCircle,
+  ChevronRight,
+  Copy,
+  Wallet,
+  Users,
+  Gift,
+} from 'lucide-react';
+import { useState } from 'react';
+
+const menuItems = [
+  { href: '/mini-app/orders', label: 'История заказов', icon: Receipt },
+  { href: '/mini-app/faq', label: 'FAQ', icon: HelpCircle },
+  { href: '/mini-app/support', label: 'Поддержка', icon: MessageCircle },
+];
 
 export default function ProfilePage() {
   const { user, isLoading, debug } = useUserStore();
+  const [copied, setCopied] = useState(false);
 
   const displayUser = {
     telegramUsername: user?.telegramUsername ? `@${user.telegramUsername}` : '—',
@@ -18,115 +35,116 @@ export default function ProfilePage() {
     referralCount: 0,
   };
 
+  const initials = (displayUser.firstName[0] || 'Г').toUpperCase();
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(displayUser.referralCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable */
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Профиль</h2>
+    <div className="space-y-5 animate-fade-up">
+      <h2 className="text-xl font-extrabold tracking-tight">Профиль</h2>
       {debug && (
-        <p className="text-xs text-muted-foreground break-all">DEBUG: {debug}</p>
+        <p className="break-all text-[10px] text-muted-foreground/60">DEBUG: {debug}</p>
       )}
 
-      {/* User Info */}
-      <Card className="glass neon-glow">
-        <CardHeader>
-          <CardTitle>Информация о пользователе</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-2xl">
-              👤
+      {/* User card */}
+      <div className="flex items-center gap-4 rounded-2xl border border-[#e50914]/25 bg-gradient-to-br from-[#1a0507] to-background p-5 glow-red-sm">
+        {isLoading ? (
+          <>
+            <div className="shimmer h-14 w-14 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <div className="shimmer h-4 w-28 rounded-md" />
+              <div className="shimmer h-3 w-20 rounded-md" />
             </div>
-            <div>
-              <p className="font-semibold">
+          </>
+        ) : (
+          <>
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff2d42] to-[#e50914] text-xl font-extrabold text-white shadow-[0_4px_20px_rgba(229,9,20,0.4)]">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-base font-bold">
                 {displayUser.firstName} {displayUser.lastName}
               </p>
-              <p className="text-sm text-muted-foreground">{displayUser.telegramUsername}</p>
+              <p className="truncate text-sm text-muted-foreground">{displayUser.telegramUsername}</p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </>
+        )}
+      </div>
 
       {/* Balance */}
-      <Card className="glass">
-        <CardHeader>
-          <CardTitle>Баланс</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-3xl font-bold text-gradient">{displayUser.balance} ₽</p>
-          <p className="text-sm text-muted-foreground mt-1">Доступно для вывода</p>
-        </CardContent>
-      </Card>
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5">
+        <div className="flex items-center gap-2">
+          <Wallet className="h-4 w-4 text-[#ff4d5e]" />
+          <h3 className="text-sm font-bold tracking-tight">Баланс</h3>
+        </div>
+        <p className="mt-3 text-3xl font-extrabold tracking-tight text-gradient-red">
+          {displayUser.balance} ₽
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">Доступно для вывода</p>
+      </div>
 
-      {/* Referral Program */}
-      <Card className="glass neon-glow-purple">
-        <CardHeader>
-          <CardTitle>Реферальная программа</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-2xl font-bold">{displayUser.referralCount}</p>
-              <p className="text-sm text-muted-foreground">Приглашённых</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{displayUser.referralEarnings} ₽</p>
-              <p className="text-sm text-muted-foreground">Заработано</p>
-            </div>
+      {/* Referral */}
+      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-[#ff4d5e]" />
+          <h3 className="text-sm font-bold tracking-tight">Реферальная программа</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3.5">
+            <p className="text-xl font-extrabold">{displayUser.referralCount}</p>
+            <p className="text-[11px] text-muted-foreground">Приглашённых</p>
           </div>
-          <div>
-            <p className="text-sm font-medium mb-2">Ваш реферальный код:</p>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={displayUser.referralCode}
-                readOnly
-                className="flex-1 px-3 py-2 bg-background/50 border border-border/50 rounded-md text-sm"
-              />
-              <Button variant="outline" size="sm">
-                Копировать
-              </Button>
-            </div>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3.5">
+            <p className="text-xl font-extrabold">{displayUser.referralEarnings} ₽</p>
+            <p className="text-[11px] text-muted-foreground">Заработано</p>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Зарабатывайте 0.5% от каждого заказа приглашённых пользователей
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+        <div>
+          <p className="mb-1.5 text-xs font-medium text-muted-foreground">Ваш реферальный код:</p>
+          <div className="flex gap-2">
+            <div className="flex h-11 flex-1 items-center truncate rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 font-mono text-sm">
+              {displayUser.referralCode}
+            </div>
+            <Button variant="outline" size="sm" className="h-11 shrink-0" onClick={copyCode}>
+              <Copy className="h-3.5 w-3.5" />
+              {copied ? 'Ок' : 'Копировать'}
+            </Button>
+          </div>
+        </div>
+        <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Gift className="h-3 w-3 text-[#ff4d5e]" />
+          0.5% от каждого заказа приглашённых пользователей
+        </p>
+      </div>
 
       {/* Menu */}
-      <div className="space-y-3">
-        <Link href="/mini-app/orders">
-          <Card className="glass hover:neon-glow transition-all cursor-pointer">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">📋</span>
-                <span>История заказов</span>
+      <div className="space-y-2.5">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="block active:scale-[0.98] transition-transform"
+            >
+              <div className="group flex items-center gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-4 transition-colors hover:border-[#e50914]/25">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.04] transition-colors group-hover:border-[#e50914]/30 group-hover:bg-[#e50914]/10">
+                  <Icon className="h-[18px] w-[18px] text-foreground/80 transition-colors group-hover:text-[#ff4d5e]" strokeWidth={1.8} />
+                </div>
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{item.label}</span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
               </div>
-              <span>→</span>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/mini-app/faq">
-          <Card className="glass hover:neon-glow transition-all cursor-pointer">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">❓</span>
-                <span>FAQ</span>
-              </div>
-              <span>→</span>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/mini-app/support">
-          <Card className="glass hover:neon-glow transition-all cursor-pointer">
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">💬</span>
-                <span>Поддержка</span>
-              </div>
-              <span>→</span>
-            </CardContent>
-          </Card>
-        </Link>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

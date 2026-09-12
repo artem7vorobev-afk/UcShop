@@ -25,6 +25,30 @@
     --ring: 224.3 76.3% 48%;
     --radius: 0.5rem;
   }
+
+  /* Premium dark/red theme — scoped to mini-app so admin keeps default theme */
+  .mini-app {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 6% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 6% 8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 355 90% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 14%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 5% 14%;
+    --muted-foreground: 240 5% 60%;
+    --accent: 240 5% 14%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 16%;
+    --input: 240 5% 18%;
+    --ring: 355 90% 55%;
+    --radius: 1rem;
+  }
 }
 
 @layer base {
@@ -35,22 +59,81 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+  .mini-app {
+    @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Prevent iOS zoom on input focus */
+  .mini-app input,
+  .mini-app textarea,
+  .mini-app select {
+    font-size: 16px;
+  }
 }
 
 @layer utilities {
   .glass {
     @apply bg-card/50 backdrop-blur-sm border border-border/50;
   }
-  
+
   .neon-glow {
     box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
   }
-  
+
   .neon-glow-purple {
     box-shadow: 0 0 20px rgba(184, 41, 221, 0.3);
   }
-  
+
   .text-gradient {
     @apply bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent;
+  }
+
+  /* --- Mini-app premium utilities --- */
+  .card-surface {
+    @apply rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm;
+  }
+
+  .glow-red {
+    box-shadow: 0 0 24px rgba(229, 9, 20, 0.35), 0 0 60px rgba(229, 9, 20, 0.12);
+  }
+
+  .glow-red-sm {
+    box-shadow: 0 0 16px rgba(229, 9, 20, 0.3);
+  }
+
+  .text-gradient-red {
+    @apply bg-gradient-to-r from-[#ff4d5e] to-[#e50914] bg-clip-text text-transparent;
+  }
+
+  .shimmer {
+    @apply relative overflow-hidden bg-white/[0.05];
+  }
+  .shimmer::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+    animation: shimmer 1.6s infinite;
+  }
+
+  .safe-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
 }

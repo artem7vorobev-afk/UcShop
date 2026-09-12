@@ -48,6 +48,13 @@ export function TelegramAuth() {
       );
       tg.ready();
       tg.expand();
+      try {
+        (tg as any).setHeaderColor?.('#0a0a0c');
+        (tg as any).setBackgroundColor?.('#0a0a0c');
+        (tg as any).disableVerticalSwipes?.();
+      } catch {
+        /* older clients may not support these methods */
+      }
 
       const tgUser = tg.initDataUnsafe?.user;
       const authToken = new URLSearchParams(window.location.search).get('auth');
