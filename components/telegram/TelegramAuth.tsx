@@ -38,7 +38,11 @@ export function TelegramAuth() {
         return;
       }
 
-      setDebug(`sdk ok, initData=${tg.initData ? 'yes' : 'empty'}`);
+      const hasProxy = typeof (window as any).TelegramWebviewProxy !== 'undefined';
+      const hash = window.location.hash ? window.location.hash.slice(0, 60) : 'none';
+      setDebug(
+        `initData=${tg.initData ? 'yes' : 'empty'} proxy=${hasProxy} hash=${hash}`
+      );
       tg.ready();
       tg.expand();
 
