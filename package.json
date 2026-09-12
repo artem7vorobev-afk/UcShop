@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@grammyjs/auto-retry": "^2.0.2",
-    "@grammyjs/conversations": "^1.2.0",
     "@prisma/client": "^5.7.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

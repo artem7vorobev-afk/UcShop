@@ -1,15 +1,11 @@
-import { Bot, GrammyError, session } from 'grammy';
+import { Bot, GrammyError } from 'grammy';
 import { autoRetry } from '@grammyjs/auto-retry';
-import { conversations, createConversation } from '@grammyjs/conversations';
 import { prisma } from '../lib/prisma';
 
 const bot = new Bot(process.env.BOT_TOKEN || '');
 
 // Auto-retry on rate limits
 bot.api.config.use(autoRetry());
-
-// Session middleware
-bot.use(session({ initial: () => ({}) }));
 
 // Start command
 bot.command('start', async (ctx) => {
