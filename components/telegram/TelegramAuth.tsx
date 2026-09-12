@@ -38,10 +38,13 @@ export function TelegramAuth() {
         return;
       }
 
-      const hasProxy = typeof (window as any).TelegramWebviewProxy !== 'undefined';
-      const hash = window.location.hash ? window.location.hash.slice(0, 60) : 'none';
+      const w = window as any;
+      const hasProxy = typeof w.TelegramWebviewProxy !== 'undefined';
+      const platform = tg.initDataUnsafe ? (w.Telegram.WebApp as any).platform : '?';
+      const version = (w.Telegram.WebApp as any).version || '?';
+      const href = window.location.href.slice(0, 80);
       setDebug(
-        `initData=${tg.initData ? 'yes' : 'empty'} proxy=${hasProxy} hash=${hash}`
+        `initData=${tg.initData ? 'yes' : 'empty'} proxy=${hasProxy} platform=${platform} ver=${version} url=${href}`
       );
       tg.ready();
       tg.expand();
