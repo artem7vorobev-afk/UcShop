@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { TelegramAuth } from '@/components/telegram/TelegramAuth';
 
 export const metadata: Metadata = {
   title: 'UcShop1 Mini App',
@@ -12,6 +13,7 @@ export default function MiniAppLayout({
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-background">
+      <TelegramAuth />
       {/* Mini App Header */}
       <header className="sticky top-0 z-50 glass border-b border-border/50">
         <div className="container mx-auto px-4 py-3">

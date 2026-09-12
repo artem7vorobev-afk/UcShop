@@ -1,9 +1,14 @@
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { useUserStore } from '@/store/user';
 
 export default function CheckoutPage() {
+  const { user } = useUserStore();
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Оформление заказа</h2>
@@ -47,11 +52,17 @@ export default function CheckoutPage() {
         <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium mb-2 block">Telegram username</label>
-            <Input placeholder="@username" />
+            <Input
+              placeholder="@username"
+              defaultValue={user?.telegramUsername ? `@${user.telegramUsername}` : ''}
+            />
           </div>
           <div>
             <label className="text-sm font-medium mb-2 block">Telegram User ID</label>
-            <Input placeholder="123456789" />
+            <Input
+              placeholder="123456789"
+              defaultValue={user?.telegramId || ''}
+            />
           </div>
         </CardContent>
       </Card>

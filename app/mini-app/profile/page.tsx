@@ -1,17 +1,21 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useUserStore } from '@/store/user';
 
 export default function ProfilePage() {
-  // Mock data - will be replaced with API call
-  const user = {
-    telegramUsername: '@testuser',
-    firstName: 'Test',
-    lastName: 'User',
+  const { user, isLoading } = useUserStore();
+
+  const displayUser = {
+    telegramUsername: user?.telegramUsername ? `@${user.telegramUsername}` : '—',
+    firstName: user?.firstName || 'Гость',
+    lastName: user?.lastName || '',
     balance: 0,
-    referralCode: 'TESTREF',
-    referralEarnings: 150,
-    referralCount: 3,
+    referralCode: user?.referralCode || '—',
+    referralEarnings: 0,
+    referralCount: 0,
   };
 
   return (
@@ -30,9 +34,9 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="font-semibold">
-                {user.firstName} {user.lastName}
+                {displayUser.firstName} {displayUser.lastName}
               </p>
-              <p className="text-sm text-muted-foreground">{user.telegramUsername}</p>
+              <p className="text-sm text-muted-foreground">{displayUser.telegramUsername}</p>
             </div>
           </div>
         </CardContent>
@@ -44,7 +48,7 @@ export default function ProfilePage() {
           <CardTitle>Баланс</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-3xl font-bold text-gradient">{user.balance} ₽</p>
+          <p className="text-3xl font-bold text-gradient">{displayUser.balance} ₽</p>
           <p className="text-sm text-muted-foreground mt-1">Доступно для вывода</p>
         </CardContent>
       </Card>
@@ -57,11 +61,11 @@ export default function ProfilePage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-2xl font-bold">{user.referralCount}</p>
+              <p className="text-2xl font-bold">{displayUser.referralCount}</p>
               <p className="text-sm text-muted-foreground">Приглашённых</p>
             </div>
             <div>
-              <p className="text-2xl font-bold">{user.referralEarnings} ₽</p>
+              <p className="text-2xl font-bold">{displayUser.referralEarnings} ₽</p>
               <p className="text-sm text-muted-foreground">Заработано</p>
             </div>
           </div>
@@ -70,7 +74,7 @@ export default function ProfilePage() {
             <div className="flex gap-2">
               <input
                 type="text"
-                value={user.referralCode}
+                value={displayUser.referralCode}
                 readOnly
                 className="flex-1 px-3 py-2 bg-background/50 border border-border/50 rounded-md text-sm"
               />
