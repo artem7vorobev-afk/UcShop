@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createOrUpdateTelegramUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { referralService } from '@/server/referral/ReferralService';
 import crypto from 'crypto';
 
 const TOKEN_TTL_MS = 10 * 60 * 1000; // 10 minutes
