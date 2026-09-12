@@ -69,6 +69,7 @@ export async function POST(request: Request) {
     const order = await prisma.order.create({
       data: {
         userId,
+        orderNumber: `ORD-${Date.now()}`,
         status: 'NEW',
         totalAmount,
         currency: 'RUB',

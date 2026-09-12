@@ -167,11 +167,12 @@ export class DeliveryService {
       throw new Error('Order not found');
     }
 
+    const orderData = (order.orderData || {}) as Record<string, any>;
     const deliveryData = {
       userId: order.userId,
-      telegramId: order.telegramId,
-      email: order.orderData.email,
-      phone: order.orderData.phone,
+      telegramId: order.telegramId || undefined,
+      email: orderData.email,
+      phone: orderData.phone,
     };
 
     const results = [];

@@ -104,12 +104,12 @@ export async function GET(request: Request) {
     // График заказов по дням
     const ordersByDay = await prisma.$queryRaw`
       SELECT 
-        DATE(created_at) as date,
+        DATE("createdAt") as date,
         COUNT(*) as count,
-        COALESCE(SUM(final_amount), 0) as revenue
+        COALESCE(SUM("finalAmount"), 0) as revenue
       FROM "Order"
-      WHERE created_at >= ${startDate}
-      GROUP BY DATE(created_at)
+      WHERE "createdAt" >= ${startDate}
+      GROUP BY DATE("createdAt")
       ORDER BY date DESC
     `;
 

@@ -263,7 +263,7 @@ export class ReceiptGenerator {
 
     const receiptData: ReceiptData = {
       orderId: order.id,
-      orderNumber: order.orderNumber,
+      orderNumber: order.orderNumber || order.id,
       createdAt: order.createdAt,
       items: order.items.map((item) => ({
         productName: item.product.name,

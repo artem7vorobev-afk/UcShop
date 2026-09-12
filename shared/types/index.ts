@@ -79,7 +79,7 @@ export interface Payment {
   currency: string;
   status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED' | 'CANCELLED';
   provider: 'MOCK' | 'SBP';
-  providerOrderId?: string;
+  providerPaymentId?: string;
   providerData?: Record<string, any>;
   createdAt: Date;
 }

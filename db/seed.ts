@@ -534,7 +534,7 @@ async function main() {
       data: {
         title: 'Telegram Stars',
         description: 'Поддержите любимых авторов',
-        link: '/telegram-stars',
+        linkUrl: '/telegram-stars',
         order: 1,
         isActive: true,
       },
@@ -543,7 +543,7 @@ async function main() {
       data: {
         title: 'Genshin Impact',
         description: 'Кристаллы genesis со скидкой',
-        link: '/genshin-impact-crystals',
+        linkUrl: '/genshin-impact-crystals',
         order: 2,
         isActive: true,
       },
@@ -552,7 +552,7 @@ async function main() {
       data: {
         title: 'Discord Nitro',
         description: 'Улучшите свой Discord',
-        link: '/discord-nitro',
+        linkUrl: '/discord-nitro',
         order: 3,
         isActive: true,
       },
@@ -604,6 +604,7 @@ async function main() {
   const testOrder1 = await prisma.order.create({
     data: {
       userId: user.id,
+      orderNumber: `ORD-${Date.now()}`,
       status: 'COMPLETED',
       totalAmount: 599,
       currency: 'RUB',
