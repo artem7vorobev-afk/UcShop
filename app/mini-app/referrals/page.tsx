@@ -56,7 +56,7 @@ export default function ReferralsPage() {
   };
 
   const shareLink = () => {
-    const text = 'Заходи в UcShop — магазин цифровых товаров и игровых пополнений!';
+    const text = 'Заходи в Pafos Market — магазин цифровых товаров и игровых пополнений!';
     const url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(text)}`;
     const tg = (window as any).Telegram?.WebApp;
     if (tg?.openTelegramLink) {

@@ -41,7 +41,7 @@ export function MiniAppHeader() {
           </button>
         )}
         <span className="text-lg font-extrabold tracking-tight">
-          Uc<span className="text-[#ff2d42]">Shop</span>
+          Pafos <span className="text-[#ff2d42]">Market</span>
         </span>
       </div>
     </header>

@@ -87,16 +87,16 @@ bot.command('start', async (ctx) => {
     : `${baseUrl}/mini-app`;
 
   await ctx.reply(
-    `👋 Привет, ${firstName || 'пользователь'}!\n\n` +
-      `Добро пожаловать в UcShop1 — магазин цифровых товаров и игровых пополнений!\n\n` +
-      `🎮 У нас вы можете купить:\n` +
-      `• Telegram Stars\n` +
-      `• Валюту для игр (PUBG, Roblox, Genshin Impact и др.)\n` +
-      `• Подарочные карты (Steam, PlayStation, Xbox)\n` +
-      `• Подписки (Discord Nitro)\n\n` +
-      `⚡ Быстрая доставка после оплаты\n` +
-      `💎 Реферальная программа с бонусами\n\n` +
-      `Нажмите кнопку ниже, чтобы открыть магазин:`,
+    `� Привет, ${firstName || 'пользователь'}!\n` +
+      `Добро пожаловать в PAFOS MARKET — место, где начинается твоя следующая игровая история. 🎮\n\n` +
+      `Здесь ты найдёшь всё необходимое для любимых игр:\n\n` +
+      `🔴 PUBG UC — пополнение UC для PUBG Mobile\n\n` +
+      `🎮 STEAM — пополнение и игровые товары\n\n` +
+      `⚡ Игры и подписки\n\n` +
+      `💎 Telegram stars и premium\n\n` +
+      `🚀 PAFOS MARKET\n` +
+      `Твой игровой баланс. Твои игры. Твой выбор.\n\n` +
+      `👇 Открыть магазин по кнопке ниже.`,
     {
       reply_markup: {
         inline_keyboard: [
@@ -105,10 +105,6 @@ bot.command('start', async (ctx) => {
               text: '🛒 Открыть магазин',
               web_app: { url: miniAppUrl },
             },
-          ],
-          [
-            { text: '📋 Мои заказы', callback_data: 'orders' },
-            { text: '👤 Профиль', callback_data: 'profile' },
           ],
           [
             { text: '❓ FAQ', callback_data: 'faq' },
